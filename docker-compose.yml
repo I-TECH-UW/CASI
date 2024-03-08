@@ -1,0 +1,198 @@
+version: "3.9"
+services:
+  keycloak.casi.uwdigi.org:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:latest
+    restart: always
+    command: ["start"]
+    environment:
+      KC_DB: postgres
+      DB_VENDOR: postgres
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+      KC_DB_URL_HOST: postgres_keycloak
+      KC_DB_URL_DATABASE: ${DB_DATABASE}
+      KC_DB_USERNAME: ${DB_USERNAME}
+      KC_DB_PASSWORD: ${DB_PASSWORD}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_DEFAULT_USERNAME}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_DEFAULT_PASSWORD}
+      KC_PROXY: edge
+      PROXY_ADDRESS_FORWARDING: true
+      KEYCLOAK_PRODUCTION: true
+      KEYCLOAK_JDBC_PARAMS: sslmode=disable&connectTimeout=40000
+      KEYCLOAK_EXTRA_ARGS: "-Dkeycloak.profile.feature.scripts=enabled"
+      KEYCLOAK_ENABLE_HTTPS: true
+      KC_HTTP_RELATIVE_PATH: /keycloak/
+      KC_HOSTNAME: ${HOSTNAME}
+      KEYCLOAK_HTTPS_CERTIFICATE_FILE: /etc/nginx/certs/casi_certificate.crt
+      KEYCLOAK_HTTPS_CERTIFICATE_KEY_FILE: /etc/nginx/certs/casi_key.key
+      TZ: Africa/Nairobi
+    ports:
+      - "8180:8080"
+      - "444:443"
+    healthcheck:
+      test: 'exit 0'
+    depends_on:
+      postgres_keycloak:
+        condition: service_healthy
+    networks:
+      - casiplus-network
+  postgres_keycloak:
+    container_name: keycloak-db
+    image: postgres:14.4
+    command: postgres -c 'max-connections=200'
+    volumes:
+      - ./data2:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    healthcheck:
+      test: 'exit 0'
+    ports:
+      - "5836:5432"
+    networks:
+      - casiplus-network
+
+  fhir.casi.uwdigi.org:
+    container_name: fhir
+    restart: on-failure
+    image: opensrp/hapi-fhir-jpaserver-starter:latest
+    ports:
+      - "8280:8080"
+    env_file:
+      - .env
+    depends_on:
+      - fhir-db
+    networks:
+      - casiplus-network
+    volumes:
+      - ./nginx/security/keystore:/etc/casiplus/keystore
+      - ./nginx/security/truststore:/etc/casiplus/truststore
+    environment:
+      SPRING_CONFIG_LOCATION: file:///run/secrets/hapi_application.yaml
+      TZ: Africa/Nairobi
+      JAVA_OPTS: "-Djavax.net.ssl.trustStore=/etc/casiplus/truststore 
+                      -Djavax.net.ssl.trustStorePassword=TVghhDVK8xS8H3
+                      -Djavax.net.ssl.trustStoreType=pkcs12 
+                      -Djavax.net.ssl.keyStore=/etc/casiplus/keystore 
+                      -Djavax.net.ssl.keyStorePassword=TVghhDVK8xS8H3 
+                      -Djavax.net.ssl.keyStoreType=pkcs12"
+    secrets:
+      - source: hapi_application.yaml
+
+  fhir-db:
+    container_name: fhir-db
+    image: postgres:14.4
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: hapi-fhir
+      POSTGRES_DB: hapi-fhir
+    ports:
+      - "5432:5432"
+    volumes:
+      # - hapi-fhir-data:/var/lib/postgresql/data
+      - ./data:/var/lib/postgresql/data
+    networks:
+      - casiplus-network
+
+  fhir-gateway:
+    image: onaio/fhir-gateway-plugin:latest
+    container_name: fhir-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      TOKEN_ISSUER: ${TOKEN_ISSUER}
+      PROXY_TO: ${PROXY_TO}
+      BACKEND_TYPE: ${BACKEND_TYPE}
+      ACCESS_CHECKER: ${ACCESS_CHECKER}
+      RUN_MODE: ${RUN_MODE}
+      ALLOWED_QUERIES_FILE: ${ALLOWED_QUERIES_FILE}
+      SYNC_FILTER_IGNORE_RESOURCES_FILE: ${SYNC_FILTER_IGNORE_RESOURCES_FILE}
+      OPENSRP_CACHE_EXPIRY_SECONDS: ${OPENSRP_CACHE_EXPIRY_SECONDS}
+    # healthcheck:
+    #   test: 'exit 0'
+    # depends_on:
+    #    fhir.casi.uwdigi.org:
+    #       condition: service_healthy
+    networks:
+      - casiplus-network
+    volumes:
+      - ./properties/hapi_page_url_allowed_queries.json:/etc/casiplus/hapi_page_url_allowed_queries.json
+      - ./properties/hapi_page_url_allowed_queries.json:/etc/casiplus/hapi_sync_filter_ignored_queries.json
+
+  proxy:
+    image: nginx:latest
+    container_name: proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/sites-enabled:/etc/nginx/sites-enabled
+      - ./nginx/security:/etc/nginx/certs
+    networks:
+      - casiplus-network
+    depends_on:
+      - keycloak.casi.uwdigi.org
+      # - fhir-gateway
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    command: ["redis-server", "--requirepass password", "--databases 1"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data3:/var/lib/redis/data
+      - ./properties/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - casiplus-network
+
+  fhir-web:
+    image: opensrp/web:v3.1.3
+    container_name: fhir-web
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./config.js.tpl:/etc/confd/templates/config.js.tmpl
+    environment:
+      # optional overrides
+      - 'NODE_ENV=production'
+      - 'EXPRESS_ALLOW_TOKEN_RENEWAL=true'
+      - 'EXPRESS_OPENSRP_LOGOUT_URL=null'
+      - 'EXPRESS_REACT_BUILD_PATH=/usr/src/web'
+
+      # keycloak
+      - EXPRESS_OPENSRP_CLIENT_ID=${CLIENT_ID}
+      - EXPRESS_OPENSRP_CLIENT_SECRET=${SECRET}
+      - EXPRESS_OPENSRP_ACCESS_TOKEN_URL=${ACCESS_TOKEN_URL}
+      - EXPRESS_OPENSRP_AUTHORIZATION_URL=${AUTHORIZATION_URL}
+      - EXPRESS_KEYCLOAK_LOGOUT_URL=${LOGOUT_URL}
+      - EXPRESS_OPENSRP_USER_URL=${USER_URL}
+      # fhir web
+      - EXPRESS_OPENSRP_CALLBACK_URL=${CALLBACK_URL}
+      - EXPRESS_FRONTEND_OPENSRP_CALLBACK_URL=${FRONTEND_OPENSRP_CALLBACK_URL}
+      - EXPRESS_SERVER_LOGOUT_URL=${SERVER_LOGOUT_URL}
+
+      # UUID's
+      - 'EXPRESS_SESSION_SECRET=SFSDG24354DVFHDSXFFHFVCSDWE'
+      # optional sentry config
+      - 'EXPRESS_REDIS_STAND_ALONE_URL=redis://default:password@redis:6379'
+    networks:
+      - casiplus-network
+
+secrets:
+  hapi_application.yaml:
+    file: ./properties/hapi_application.yaml
+
+networks:
+  casiplus-network:
+    driver: bridge
+
+volumes:
+  data-keycloak:
+  hapi-fhir-data:
+  redis:
