@@ -1,0 +1,70 @@
+// window._env_ = {};
+// config.js.tpl
+
+window._env_ = {
+    // keycloak
+    REACT_APP_AUTHZ_STRATEGY: 'keycloak',
+    REACT_APP_KEYCLOAK_API_BASE_URL: 'http://localhost/keycloak/admin/realms/fhir',
+    REACT_APP_KEYCLOAK_LOGOUT_URL:
+      'http://localhost/keycloak/realms/fhir/protocol/openid-connect/logout',
+    REACT_APP_OPENSRP_ACCESS_TOKEN_URL:
+      'http://localhost/keycloak/realms/fhir/protocol/openid-connect/token',
+    REACT_APP_OPENSRP_AUTHORIZATION_URL:
+      'http://localhost/keycloak/realms/fhir/protocol/openid-connect/auth',
+    REACT_APP_OPENSRP_CLIENT_ID: 'fhir-web',
+    REACT_APP_OPENSRP_USER_URL:
+      'http://localhost/keycloak/realms/fhir/protocol/openid-connect/userinfo',
+
+    // fhir-web
+    REACT_APP_WEBSITE_NAME: 'Casi Plus',
+    REACT_APP_OPENSRP_WEB_VERSION: 'v3.1.3',
+    REACT_APP_DOMAIN_NAME: 'http://localhost',
+    REACT_APP_EXPRESS_OAUTH_GET_STATE_URL: 'https://localhost:8000/oauth/state',
+    REACT_APP_EXPRESS_OAUTH_LOGOUT_URL: 'http://localhost:8000/logout',
+
+    // fhir-server
+
+  // REACT_APP_FHIR_API_BASE_URL: 'http://localhost/fhirstore/fhir',
+    REACT_APP_FHIR_API_BASE_URL: 'http://localhost/gateway/fhir',
+
+
+    // UUID's
+    REACT_APP_FHIR_ROOT_LOCATION_ID: '36f14963-4035-4028-a738-136ddf8ebade',
+    REACT_APP_COMMODITIES_LIST_RESOURCE_ID: 'eb25fbaf-8cab-4671-82c0-05c6302206c1',
+
+    // toggle fhir-web modules
+    REACT_APP_ENABLE_FHIR_CARE_TEAM: 'true',
+    REACT_APP_ENABLE_FHIR_GROUP: 'true',
+    REACT_APP_ENABLE_FHIR_HEALTHCARE_SERVICES: 'true',
+    REACT_APP_ENABLE_FHIR_LOCATIONS: 'true',
+    REACT_APP_ENABLE_FHIR_PATIENTS: 'true',
+    REACT_APP_ENABLE_FHIR_TEAMS: 'true',
+    REACT_APP_ENABLE_FHIR_USER_MANAGEMENT: 'true',
+    REACT_APP_ENABLE_FHIR_COMMODITY: 'false',
+    REACT_APP_ENABLE_QUEST: 'true',
+    REACT_APP_ENABLE_TEAMS_ASSIGNMENT_MODULE: 'true',
+
+    // i18n
+    REACT_APP_SUPPORTED_LANGUAGES: "en,fr",
+    REACT_APP_ENABLE_LANGUAGE_SWITCHER: 'true',
+    REACT_APP_PROJECT_CODE: 'core',
+    REACT_APP_LANGUAGE_CODE: 'en',
+
+    // optional overrides
+    SKIP_PREFLIGHT_CHECK: 'true',
+    GENERATE_SOURCEMAP: 'true',
+    INLINE_RUNTIME_CHUNK: 'true',
+    IMAGE_INLINE_SIZE_LIMIT: '0',
+    REACT_APP_MAIN_LOGO_SRC: '',
+    REACT_APP_OPENSRP_OAUTH_SCOPES: 'profile',
+    REACT_APP_ENABLE_OPENSRP_OAUTH: 'true',
+    REACT_APP_BACKEND_ACTIVE: 'true',
+    REACT_APP_SUPPORTED_LANGUAGES: 'en',
+    REACT_APP_PROJECT_CODE: 'casi',
+    REACT_APP_DEFAULTS_TABLE_PAGE_SIZE: '10',
+    REACT_APP_OPENSRP_LOGOUT_URL: 'null',
+    REACT_APP_PRACTITIONER_TO_ORG_ASSIGNMENT_STRATEGY: 'ONE_TO_MANY',
+
+    // optional sentry config
+    REACT_APP_SENTRY_CONFIG_JSON: "",
+  };
