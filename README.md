@@ -59,3 +59,6 @@ Run `sudo cp -r config.js.tpl.sample config.js.tpl`
 Replace keyStorePassword value with the password that was used when creating keystore 
 
 Then do the same thing with trustStorePassword value in docker-compose 
+
+### Turn up the docker containers 
+Run` sudo docker-compose up -d`
