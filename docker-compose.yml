@@ -24,8 +24,8 @@ services:
       KEYCLOAK_ENABLE_HTTPS: true
       KC_HTTP_RELATIVE_PATH: /keycloak/
       KC_HOSTNAME: ${HOSTNAME}
-      KEYCLOAK_HTTPS_CERTIFICATE_FILE: /etc/nginx/certs/casi_certificate.crt
-      KEYCLOAK_HTTPS_CERTIFICATE_KEY_FILE: /etc/nginx/certs/casi_key.key
+      KEYCLOAK_HTTPS_CERTIFICATE_FILE: /etc/nginx/certs/apache-selfsigned.crt
+      KEYCLOAK_HTTPS_CERTIFICATE_KEY_FILE: /etc/nginx/certs/apache-selfsigned.key
       TZ: Africa/Nairobi
     ports:
       - "8180:8080"
