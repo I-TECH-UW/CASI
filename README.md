@@ -4,17 +4,23 @@ Casi plus is a health application which tracks and traces the index clients and 
 
 This is docker setup running many services including the following:
 
-Setup on Ubuntu 22 LTS
-
 1. HapiFhir server 
 2. Keycloak Authenticator
 3. Fhir-web(web dashboard)
 4. Fhir-gateway 
 5. Proxy(Routing local Ports)
 
+Setup on Ubuntu 22 LTS
+
 After cloning this repository follow the steps below to have CASI-PLUS server running.
 
-Please include the lines to install these, including the github commands to clone the repos and any needed steps. 
+### Clone the CASI code and install docker
+
+Run `sudo apt-get update`
+
+Run `sudo apt-get install docker-compose`
+
+Run `sudo git clone https://github.com/I-TECH-UW/CASI.git`
 
 ### Generate Self assigned Certificates 
 
@@ -62,9 +68,12 @@ Run `sudo cp -r config.js.tpl.sample config.js.tpl`
 
 ### Changes in the docker-compose file 
 
+Run `sudo nano docker-compose.yml`
+
 Replace keyStorePassword value with the password that was used when creating keystore 
 
 Then do the same thing with trustStorePassword value in docker-compose 
 
-### Turn up the docker containers 
+Save the docker compose configuration
+### Turn on the docker containers 
 Run` sudo docker-compose up -d`
