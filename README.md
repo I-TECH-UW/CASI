@@ -20,7 +20,7 @@ Run  `sudo mkdir /nginx/`
 
 Run  `sudo mkdir /nginx/security`
 
-Run  ` cd nginx/security`
+Run  ` cd /nginx/security`
 
 Now self-assigned generate Certificate and key
 
