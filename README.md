@@ -16,7 +16,9 @@ After cloning this repository follow the steps below to have CASI-PLUS server ru
 
 On the root of this project create and move to security directory
 
-Run  `sudo mkdir nginx/security`
+Run  `sudo mkdir /nginx/`
+
+Run  `sudo mkdir /nginx/security`
 
 Run  ` cd nginx/security`
 
