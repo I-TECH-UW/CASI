@@ -8,8 +8,8 @@ services:
     environment:
       KC_DB: postgres
       DB_VENDOR: postgres
-      KC_HEALTH_ENABLED: true
-      KC_METRICS_ENABLED: true
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
       KC_DB_URL_HOST: postgres_keycloak
       KC_DB_URL_DATABASE: ${DB_DATABASE}
       KC_DB_USERNAME: ${DB_USERNAME}
@@ -17,11 +17,11 @@ services:
       KEYCLOAK_ADMIN: ${KEYCLOAK_DEFAULT_USERNAME}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_DEFAULT_PASSWORD}
       KC_PROXY: edge
-      PROXY_ADDRESS_FORWARDING: true
-      KEYCLOAK_PRODUCTION: true
+      PROXY_ADDRESS_FORWARDING: "true"
+      KEYCLOAK_PRODUCTION: "true"
       KEYCLOAK_JDBC_PARAMS: sslmode=disable&connectTimeout=40000
       KEYCLOAK_EXTRA_ARGS: "-Dkeycloak.profile.feature.scripts=enabled"
-      KEYCLOAK_ENABLE_HTTPS: true
+      KEYCLOAK_ENABLE_HTTPS: "true"
       KC_HTTP_RELATIVE_PATH: /keycloak/
       KC_HOSTNAME: ${HOSTNAME}
       KEYCLOAK_HTTPS_CERTIFICATE_FILE: /etc/nginx/certs/apache-selfsigned.crt
