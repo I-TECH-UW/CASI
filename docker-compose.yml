@@ -24,9 +24,10 @@ services:
       KEYCLOAK_ENABLE_HTTPS: "true"
       KC_HTTP_RELATIVE_PATH: /keycloak/
       KC_HOSTNAME: ${HOSTNAME}
-      KEYCLOAK_HTTPS_CERTIFICATE_FILE: /etc/nginx/certs/apache-selfsigned.crt
-      KEYCLOAK_HTTPS_CERTIFICATE_KEY_FILE: /etc/nginx/certs/apache-selfsigned.key
+      KEYCLOAK_HTTPS_CERTIFICATE_FILE: /etc/nginx/certs/casi_certificate.crt
+      KEYCLOAK_HTTPS_CERTIFICATE_KEY_FILE: /etc/nginx/certs/casi_key.key
       TZ: Africa/Nairobi
+      KEYCLOAK_IMPORT: ./properties/keycloak_import_users.json
     ports:
       - "8180:8080"
       - "444:443"
@@ -60,8 +61,7 @@ services:
     image: opensrp/hapi-fhir-jpaserver-starter:latest
     ports:
       - "8280:8080"
-    env_file:
-      - .env
+      # - "445:443"  
     depends_on:
       - fhir-db
     networks:
@@ -80,7 +80,7 @@ services:
                       -Djavax.net.ssl.keyStoreType=pkcs12"
     secrets:
       - source: hapi_application.yaml
-
+  
   fhir-db:
     container_name: fhir-db
     image: postgres:14.4
@@ -121,7 +121,7 @@ services:
     volumes:
       - ./properties/hapi_page_url_allowed_queries.json:/etc/casiplus/hapi_page_url_allowed_queries.json
       - ./properties/hapi_page_url_allowed_queries.json:/etc/casiplus/hapi_sync_filter_ignored_queries.json
-
+  
   proxy:
     image: nginx:latest
     container_name: proxy
@@ -137,7 +137,7 @@ services:
     depends_on:
       - keycloak.casi.uwdigi.org
       # - fhir-gateway
-
+  
   redis:
     image: redis:latest
     container_name: redis
@@ -152,7 +152,7 @@ services:
       - casiplus-network
 
   fhir-web:
-    image: opensrp/web:v3.1.3
+    image: opensrp/web:latest
     container_name: fhir-web
     ports:
       - '3000:3000'
@@ -166,20 +166,35 @@ services:
       - 'EXPRESS_REACT_BUILD_PATH=/usr/src/web'
 
       # keycloak
-      - EXPRESS_OPENSRP_CLIENT_ID=${CLIENT_ID}
-      - EXPRESS_OPENSRP_CLIENT_SECRET=${SECRET}
-      - EXPRESS_OPENSRP_ACCESS_TOKEN_URL=${ACCESS_TOKEN_URL}
-      - EXPRESS_OPENSRP_AUTHORIZATION_URL=${AUTHORIZATION_URL}
-      - EXPRESS_KEYCLOAK_LOGOUT_URL=${LOGOUT_URL}
-      - EXPRESS_OPENSRP_USER_URL=${USER_URL}
+      - 'EXPRESS_OPENSRP_CLIENT_ID=fhir-web'
+      - 'EXPRESS_OPENSRP_CLIENT_SECRET=MZVHMOLJvqK8pfP1MWJ6O1JA00Lr3JE8'
+      - 'EXPRESS_OPENSRP_ACCESS_TOKEN_URL=https://localhost/keycloak/realms/fhir/protocol/openid-connect/token'
+      - 'EXPRESS_OPENSRP_AUTHORIZATION_URL=https://localhost/keycloak/realms/fhir/protocol/openid-connect/auth'
+      - 'EXPRESS_KEYCLOAK_LOGOUT_URL=https://localhost/keycloak/realms/fhir/protocol/openid-connect/logout'
+      - 'EXPRESS_OPENSRP_USER_URL=https://localhost/keycloak/realms/fhir/protocol/openid-connect/userinfo'
+
       # fhir web
-      - EXPRESS_OPENSRP_CALLBACK_URL=${CALLBACK_URL}
-      - EXPRESS_FRONTEND_OPENSRP_CALLBACK_URL=${FRONTEND_OPENSRP_CALLBACK_URL}
-      - EXPRESS_SERVER_LOGOUT_URL=${SERVER_LOGOUT_URL}
+      - 'EXPRESS_OPENSRP_CALLBACK_URL=https://localhost/oauth/callback/OpenSRP/'
+      - 'EXPRESS_FRONTEND_OPENSRP_CALLBACK_URL=https://localhost/fe/oauth/callback/opensrp'
+      - 'EXPRESS_SERVER_LOGOUT_URL=https://localhost/logout'
 
       # UUID's
-      - 'EXPRESS_SESSION_SECRET=SFSDG24354DVFHDSXFFHFVCSDWE'
+      - 'EXPRESS_SESSION_SECRET=DGDFG345HFDS35Y5YGSCXBVGNGHR_34RT'
+        
+        # content security policy configuration
+        # remove optional-sentry-base-url config block if your deployment has no sentry
+      #- 'EXPRESS_CONTENT_SECURITY_POLICY_CONFIG={"connect-src":["''self''","https://localhost","http://casi.uwdigi.org:8080"],"default-src":["''self''"],"img-src":["''self''","https://github.com/opensrp/","https://*.githubusercontent.com/opensrp/"]}'
+      # to disable CSP
+      
       # optional sentry config
+      # - 'EXPRESS_RESPONSE_HEADERS={"report-to":", {endpoints:[{url:http://bfd78ce361fe498c927988105c7be7dd@my-sentry.orb.local/2}],group:csp-endpoint,max_age:10886400}"}'
+      # - 'EXPRESS_CONTENT_SECURITY_POLICY_CONFIG={"connect-src":["''self''","https://localhost","http://casi.uwdigi.org:8080"],"default-src":["''self''"],"img-src":["''self''","https://github.com/>""
+      # - 'EXPRESS_CONTENT_SECURITY_POLICY_CONFIG={"connect-src":["''self''","http://casi.uwdigi.org:8080"],"default-src":["''self''"],"img-src":["''self''","https://github.com/opensrp/","https://*.github.com/opensrp/"]}'
+      # - 'EXPRESS_CONTENT_SECURITY_POLICY_CONFIG={"connect-src":["''self''","https://f31075f1055b99339b6114b85968be11@o4506688852590592.ingest.sentry.io/4506690470936576","https://localhost/keycloak","http://casi.uwdigi.org:8080"],"default-src":["''self''"],"img-src":["''self''","https://github.com/opensrp/","https://*.githubusercontent.com/opensrp/"]}'
+      - 'EXPRESS_CONTENT_SECURITY_POLICY_CONFIG=false'
+      # optional redis and redis sentinel session store config (use either or neither not both)
+      # - 'EXPRESS_REDIS_STAND_ALONE_URL=redis://username:password@redis-base-url:port/db'
+      # - 'EXPRESS_REDIS_SENTINEL_CONFIG={"name":"sentinelMasterName","sentinelPassword":"sentinelMasterPassword","sentinels":[{"host":"sentinel-node-1-base-url","port":"12345"},{"host":"sentinel-node-2-base-url","port":"12345"},{"host":"sentinel-node-3-base-url","port":"12345"}]}'
       - 'EXPRESS_REDIS_STAND_ALONE_URL=redis://default:password@redis:6379'
     networks:
       - casiplus-network

@@ -4,28 +4,28 @@
 window._env_ = {
     // keycloak
     REACT_APP_AUTHZ_STRATEGY: 'keycloak',
-    REACT_APP_KEYCLOAK_API_BASE_URL: 'http://localhost/keycloak/admin/realms/fhir',
+    REACT_APP_KEYCLOAK_API_BASE_URL: 'https://localhost/keycloak/admin/realms/fhir',
     REACT_APP_KEYCLOAK_LOGOUT_URL:
-      'http://localhost/keycloak/realms/fhir/protocol/openid-connect/logout',
+      'https://localhost/keycloak/realms/fhir/protocol/openid-connect/logout',
     REACT_APP_OPENSRP_ACCESS_TOKEN_URL:
-      'http://localhost/keycloak/realms/fhir/protocol/openid-connect/token',
+      'https://localhost/keycloak/realms/fhir/protocol/openid-connect/token',
     REACT_APP_OPENSRP_AUTHORIZATION_URL:
-      'http://localhost/keycloak/realms/fhir/protocol/openid-connect/auth',
+      'https://localhost/keycloak/realms/fhir/protocol/openid-connect/auth',
     REACT_APP_OPENSRP_CLIENT_ID: 'fhir-web',
     REACT_APP_OPENSRP_USER_URL:
-      'http://localhost/keycloak/realms/fhir/protocol/openid-connect/userinfo',
+      'https://localhost/keycloak/realms/fhir/protocol/openid-connect/userinfo',
 
     // fhir-web
     REACT_APP_WEBSITE_NAME: 'Casi Plus',
     REACT_APP_OPENSRP_WEB_VERSION: 'v3.1.3',
-    REACT_APP_DOMAIN_NAME: 'http://localhost',
-    REACT_APP_EXPRESS_OAUTH_GET_STATE_URL: 'https://localhost:8000/oauth/state',
-    REACT_APP_EXPRESS_OAUTH_LOGOUT_URL: 'http://localhost:8000/logout',
+    REACT_APP_DOMAIN_NAME: 'https://localhost',
+    REACT_APP_EXPRESS_OAUTH_GET_STATE_URL: 'https://localhost/oauth/state',
+    REACT_APP_EXPRESS_OAUTH_LOGOUT_URL: 'https://localhost/logout',
 
     // fhir-server
 
-  // REACT_APP_FHIR_API_BASE_URL: 'http://localhost/fhirstore/fhir',
-    REACT_APP_FHIR_API_BASE_URL: 'http://localhost/gateway/fhir',
+  // REACT_APP_FHIR_API_BASE_URL: 'https://localhost/fhirstore/fhir',
+    REACT_APP_FHIR_API_BASE_URL: 'https://localhost/gateway/fhir',
 
 
     // UUID's
@@ -66,5 +66,5 @@ window._env_ = {
     REACT_APP_PRACTITIONER_TO_ORG_ASSIGNMENT_STRATEGY: 'ONE_TO_MANY',
 
     // optional sentry config
-    REACT_APP_SENTRY_CONFIG_JSON: "",
+    REACT_APP_SENTRY_CONFIG_JSON: "{\"dsn\":\"https://f31075f1055b99339b6114b85968be11@o4506688852590592.ingest.sentry.io/4506690470936576\",\"environment\":\"production\",\"release\":\"2\",\"release-name\":\"internal\",\"release-namespace\":\"internal\",\"tags\":{}}",
   };
