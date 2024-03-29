@@ -22,6 +22,7 @@ Run `sudo apt-get install docker-compose`
 
 Run `sudo git clone https://github.com/I-TECH-UW/CASI.git`
 
+
 ### Generate Self assigned Certificates
 
 On the root of this project create and move to security directory
@@ -31,6 +32,7 @@ Run  `cd nginx`
 Run  `sudo mkdir security`
 
 Run  `cd security`
+
 
 Now self-assigned generate Certificate and key
 
@@ -47,7 +49,9 @@ Run  `sudo openssl pkcs12 -inkey casi_key.key -in casi_certificate.crt -export -
 
 #### Generate Truststore
 
+
 Run  `sudo openssl pkcs12 -export -nokeys -in casi_certificate.crt -out truststore
+
 `
 
 *** Set Truststore password, Sure to remember your truststore password, you will need it later **
@@ -86,10 +90,15 @@ Update all host addresses from `http://localhost` with your server https domain 
 
 Run `sudo nano docker-compose.yml`
 
+
 Replace keyStorePassword value with the password that was used when creating keystore
+
+Run `sudo nano docker-compose.yml`
 
 Then do the same thing with trustStorePassword value in docker-compose
 
 Save the docker compose configuration
+
 ### Turn on the docker containers
+
 Run` sudo docker-compose up -d`
