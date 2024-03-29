@@ -30,7 +30,7 @@ spring:
       #Hibernate dialect is automatically detected except Postgres and H2.
       #If using H2, then supply the value of ca.uhn.fhir.jpa.model.dialect.HapiFhirH2Dialect
       #If using postgres, then supply the value of ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgres94Dialect
-
+      
       # hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgres94Dialect
       #      hibernate.hbm2ddl.auto: update
       #      hibernate.jdbc.batch_size: 20
@@ -150,7 +150,7 @@ hapi:
     tester:
       home:
         name: Local Tester
-        server_address: ${SERVER_ADDRESS}
+        server_address: 'https://localhost/fhirstore/fhir'
         refuse_to_fetch_third_party_urls: false
         fhir_version: R4
       global:
@@ -201,11 +201,11 @@ spring.autoconfigure.exclude: org.springframework.boot.autoconfigure.elasticsear
 
 keycloak:
   enabled: false
-  auth-server-url: ${AUTH_SERVER_URL}
+  auth-server-url: https://localhost/keycloak
   realm: fhir
-  resource: ${CORE_CLIENT}
+  resource: fhir-core
   credentials:
-    secret: ${CORE_SECRET}
+    secret: uwaRSfjjweNkpFrg5aWZADG5OJBXbQg9
   ssl-required: none
   # ssl-required: external
 #  use-resource-role-mappings: true,
@@ -215,7 +215,7 @@ logging.level.org.apache: trace
 sentry:
   enabled: true
   options:
-    dsn: ${SENTRY}
+    dsn: https://df4b3b7146716bc596ab66b446c8a548@o4506688852590592.ingest.sentry.io/4506690677178368
     release: 1
     environment: production
     tags:
